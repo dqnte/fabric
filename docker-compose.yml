@@ -1,0 +1,16 @@
+version: '3'
+services:
+  server:
+    build: ./server
+    ports:
+      - "8080:8080"
+    container_name: fabric-server
+    restart: always
+    links:
+      - db
+  db:
+    image: postgres:11.6-alpine
+    ports:
+    - "5432:5432"
+    container_name: fabric-database
+    restart: always
