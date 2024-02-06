@@ -1,7 +1,9 @@
 from fastapi import FastAPI
+from fastapi.logger import logger
 from sqlalchemy.sql import text
 from database import db_session
 from fastapi.middleware.cors import CORSMiddleware
+from typing import Dict
 
 app = FastAPI(debug=True)
 
@@ -15,11 +17,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
-@app.get("/")
-async def root():
-    return {"message": "Fabric in the building!"}
 
 
 def _find_surgeries():
@@ -42,7 +39,7 @@ def _find_surgeries():
                  on surgery.patient_id = patient.id
                left join provider
                  on provider.id = surgery.provider_id
-              where not surgery.deleted
+              where not surgery.cancelled
               order by surgery.date
              """
         )
@@ -61,7 +58,7 @@ def _find_surgeries():
                 "id": surgery.patient_id,
                 "first_name": surgery.patient_first_name,
                 "last_name": surgery.patient_last_name,
-                "dob": surgery.patient_dob
+                "dob": surgery.patient_dob,
             },
         }
         for surgery in surgeries
@@ -71,3 +68,17 @@ def _find_surgeries():
 @app.get("/surgery")
 async def surgeries():
     return {"surgeries": _find_surgeries()}
+
+
+@app.post("/surgery/cancel")
+async def cancel_surgeries(payload: Dict):  # this typing is lazy, i appologize
+    db_session.execute(
+        text(
+            """
+           update surgery
+              set cancelled = 'true'
+            where id = any(:surgery_ids)
+             """
+        ),
+        {"surgery_ids": payload["surgery_ids"]},
+    )

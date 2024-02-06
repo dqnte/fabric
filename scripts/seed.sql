@@ -4,7 +4,7 @@ create table if not exists surgery(
    id bigserial primary key,
    date timestamp without time zone,
    type text,
-   deleted boolean default false,
+   cancelled boolean default false,
    patient_id bigint,
    provider_id bigint,
    created_at timestamp without time zone default now()
@@ -35,7 +35,7 @@ insert into patient(id, first_name, last_name, dob) values (2, 'Robert', 'Leonar
 insert into surgery(date, type, patient_id, provider_id) values ('2024-02-10', 'appendectomy', 1, 1);
 insert into surgery(date, type, patient_id, provider_id) values ('2024-02-11', 'appendectomy', 1, 1);
 insert into surgery(date, type, patient_id, provider_id) values ('2024-02-11', 'appendectomy', 2, 1);
-insert into surgery(date, type, patient_id, provider_id) values ('2024-02-11', 'appendectomy', 2, 3);
+insert into surgery(date, type, patient_id, provider_id) values ('2024-02-11', 'appendectomy', 2, 2);
 
 rollback;
 -- commit;
