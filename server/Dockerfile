@@ -2,7 +2,13 @@ FROM python:3.9-slim
 
 WORKDIR /app
 COPY requirements.txt .
-RUN pip install -r requirements.txt
+
+# these are some dependencies for fast api's connection to a psql database
+RUN apt-get update \
+    && apt-get -y install libpq-dev gcc
+
+RUN pip install --upgrade pip && pip install -r requirements.txt
+
 COPY . .
 
 EXPOSE 8080
