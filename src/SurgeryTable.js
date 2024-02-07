@@ -21,6 +21,16 @@ export default function SurgeryTable(props) {
     return date.toLocaleTimeString("en-US", options);
   };
 
+  const displayAge = (patient) => {
+    const birthDate = new Date(patient.dob);
+    const currentDate = new Date();
+    const diff = currentDate - birthDate;
+    const ageDate = new Date(diff);
+
+    // javascript uses 1970 as the time from which all dates are counted
+    return Math.abs(ageDate.getUTCFullYear() - 1970);
+  };
+
   return (
     <table className="SurgeryTable">
       <thead>
@@ -28,7 +38,8 @@ export default function SurgeryTable(props) {
           <th>Date</th>
           <th>Time</th>
           <th>Patient</th>
-          <th>DoB</th>
+          <th>DOB</th>
+          <th>Age</th>
           <th>Surgeon</th>
           <th>Type</th>
           <th />
@@ -44,6 +55,7 @@ export default function SurgeryTable(props) {
                 {surgery.patient.first_name} {surgery.patient.last_name}
               </td>
               <td>{displayDate(surgery.patient.dob)}</td>
+              <td>{displayAge(surgery.patient)}</td>
               <td>
                 {surgery.provider?.first_name} {surgery.provider?.last_name}
               </td>
