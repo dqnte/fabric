@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { fetchFormData } from "./api";
 
+import "./SurgeryModal.scss";
+
 export default function SurgeryModal(props) {
   const { addSurgery, selectedSurgery, updateSurgery } = props;
   const initialFormState = {
@@ -148,7 +150,7 @@ export default function SurgeryModal(props) {
             })}
           </select>
         </label>
-        <button type="submit">Submit</button>
+        <button className="SurgeryModal__Submit" type="submit">Submit</button>
       </form>
     </div>
   );
