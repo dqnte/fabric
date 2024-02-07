@@ -3,3 +3,5 @@ postgres-data/
 .python-version
 .DS_Store
 node_modules
+
+__pycache__/
