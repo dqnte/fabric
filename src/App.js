@@ -1,16 +1,22 @@
 import "./App.scss";
 import SurgeryTable from "./SurgeryTable";
-import AddSurgeryModal from "./AddSurgeryModal";
+import SurgeryModal from "./SurgeryModal";
 import { useState, useEffect } from "react";
-import { fetchSurgeries, cancelSurgeries, createSurgery } from "./store";
+import {
+  fetchSurgeries,
+  cancelSurgeries,
+  createSurgery,
+  sendSurgeryUpdate,
+} from "./api";
 
 export default function App() {
-  const [surgeries, updateSurgeries] = useState([]);
+  const [surgeries, setCurrentSurgeries] = useState([]);
+  const [selectedSurgery, setSelectedSurgery] = useState(null);
 
   const getSurgeries = async () => {
     try {
       const allSurgeries = await fetchSurgeries();
-      updateSurgeries(allSurgeries);
+      setCurrentSurgeries(allSurgeries);
     } catch (err) {
       // TODO: add a nice message that something is up with the server
       console.error(err);
@@ -20,7 +26,7 @@ export default function App() {
   const removeSurgeries = async (idsToRemove) => {
     try {
       await cancelSurgeries(idsToRemove);
-      updateSurgeries(
+      setCurrentSurgeries(
         surgeries.filter((surgery) => !idsToRemove.includes(surgery.id)),
       );
     } catch (err) {
@@ -32,10 +38,29 @@ export default function App() {
   const addSurgery = async (newSurgery) => {
     try {
       const createdSurgery = await createSurgery(newSurgery);
-      updateSurgeries([...surgeries, createdSurgery]);
+      setCurrentSurgeries([...surgeries, createdSurgery]);
     } catch (err) {
       // I promise im not this lazy irl
-      console.log(err);
+      console.err(err);
+    }
+  };
+
+  const selectSurgery = (surgery) => {
+    setSelectedSurgery(surgery);
+  };
+
+  const updateSurgery = async (updatedSurgery) => {
+    try {
+      const newSurgery = await sendSurgeryUpdate(updatedSurgery);
+      setSelectedSurgery(null);
+      setCurrentSurgeries(
+        surgeries.map((surgery) => {
+          // we want to update the surgeries array with the new surgery object from the database
+          return surgery.id === newSurgery.id ? newSurgery : surgery;
+        }),
+      );
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -45,8 +70,16 @@ export default function App() {
 
   return (
     <div className="App">
-      <SurgeryTable surgeries={surgeries} removeSurgeries={removeSurgeries} />
-      <AddSurgeryModal addSurgery={addSurgery} />
+      <SurgeryTable
+        surgeries={surgeries}
+        removeSurgeries={removeSurgeries}
+        selectSurgery={selectSurgery}
+      />
+      <SurgeryModal
+        addSurgery={addSurgery}
+        updateSurgery={updateSurgery}
+        selectedSurgery={selectedSurgery}
+      />
     </div>
   );
 }

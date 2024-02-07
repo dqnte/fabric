@@ -71,7 +71,7 @@ def cancel_surgeries_with_ids(surgery_ids):
 def create_surgery_with_values(new_surgery):
     surgery_id = db_session.execute(
         text(
-            f"""
+            """
             insert into surgery (date, type, patient_id, provider_id)
             values (:date, :type, :patient_id, :provider_id)
             returning id
@@ -88,6 +88,34 @@ def create_surgery_with_values(new_surgery):
             """
         ),
         {"id": surgery_id},
+    ).one_or_none()
+
+    return _map_surgery_object(surgery)
+
+
+def update_surgery_with_values(updated_surgery):
+    db_session.execute(
+        text(
+            """
+            update surgery
+               set date = :date,
+                   patient_id = :patient_id,
+                   provider_id = :provider_id,
+                   type = :type
+             where id = :id
+            """
+        ),
+        updated_surgery,
+    )
+
+    surgery = db_session.execute(
+        text(
+            f"""
+            {base_surgery_query}
+            where surgery.id = :id
+            """
+        ),
+        {"id": updated_surgery["id"]},
     ).one_or_none()
 
     return _map_surgery_object(surgery)

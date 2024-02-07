@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { fetchFormData } from "./store";
+import { fetchFormData } from "./api";
 
-export default function AddSurgeryModal(props) {
-  const { addSurgery } = props;
+export default function SurgeryModal(props) {
+  const { addSurgery, selectedSurgery, updateSurgery } = props;
   const initialFormState = {
+    id: null,
     type: "",
     date: "",
     time: "",
@@ -28,13 +29,19 @@ export default function AddSurgeryModal(props) {
     // surgery dates are timestamps in the database, so we should convert them here
     const date = new Date(`${currentFormState.date} ${currentFormState.time}`);
     const formPayload = {
+      id: currentFormState.id,
       type: currentFormState.type,
       patient_id: currentFormState.patient_id,
       provider_id: currentFormState.provider_id,
       date: date.toISOString(),
     };
 
-    addSurgery(formPayload);
+    if (currentFormState.id) {
+      updateSurgery(formPayload);
+    } else {
+      addSurgery(formPayload);
+    }
+
     setFormState({ ...initialFormState });
   };
 
@@ -45,8 +52,36 @@ export default function AddSurgeryModal(props) {
     });
   }, []);
 
+  useEffect(() => {
+    if (selectedSurgery) {
+      // this seems to be the cleanest way of setting the date of an input
+      const surgeryDate = new Date(selectedSurgery.date);
+
+      const day = ("0" + surgeryDate.getDate()).slice(-2);
+      const month = ("0" + (surgeryDate.getMonth() + 1)).slice(-2);
+      const dateString = `${surgeryDate.getFullYear()}-${month}-${day}`;
+
+      let timeString = surgeryDate.toLocaleTimeString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      });
+      // truly disappointing
+      timeString = timeString === "24:00" ? "00:00" : timeString;
+
+      setFormState({
+        id: selectedSurgery.id,
+        type: selectedSurgery.type,
+        date: dateString,
+        time: timeString,
+        patient_id: selectedSurgery.patient.id,
+        provider_id: selectedSurgery.provider.id,
+      });
+    }
+  }, [selectedSurgery]);
+
   return (
-    <div className="AddSurgeryModal">
+    <div className="SurgeryModal">
       <form onSubmit={handleSubmit}>
         <label>
           Type:

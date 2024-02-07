@@ -2,7 +2,7 @@ begin;
 
 create table if not exists surgery(
    id bigserial primary key,
-   date timestamp without time zone,
+   date timestamp with time zone,
    type text,
    cancelled boolean default false,
    patient_id bigint,

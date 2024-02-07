@@ -1,5 +1,5 @@
 export default function SurgeryTable(props) {
-  const { surgeries, removeSurgeries } = props;
+  const { surgeries, removeSurgeries, selectSurgery } = props;
 
   const displayDate = (dateString) => {
     const date = new Date(dateString);
@@ -43,6 +43,7 @@ export default function SurgeryTable(props) {
           <th>Surgeon</th>
           <th>Type</th>
           <th />
+          <th />
         </tr>
       </thead>
       <tbody>
@@ -64,6 +65,9 @@ export default function SurgeryTable(props) {
                 <button onClick={() => removeSurgeries([surgery.id])}>
                   cancel
                 </button>
+              </td>
+              <td>
+                <button onClick={() => selectSurgery(surgery)}>edit</button>
               </td>
             </tr>
           );

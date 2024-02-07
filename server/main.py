@@ -8,6 +8,7 @@ from queries import (
     get_all_patients,
     get_all_providers,
     get_all_surgeries,
+    update_surgery_with_values,
 )
 
 app = FastAPI(debug=True)
@@ -37,6 +38,11 @@ async def cancel_surgeries(payload: Dict):  # this typing is lazy, i appologize
 @app.post("/surgery/create")
 async def create_surgery(new_surgery: Dict):
     return create_surgery_with_values(new_surgery)
+
+
+@app.post("/surgery/update")
+async def update_surgery(new_surgery: Dict):
+    return update_surgery_with_values(new_surgery)
 
 
 @app.get("/providers")

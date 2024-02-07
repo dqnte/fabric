@@ -20,6 +20,12 @@ export const createSurgery = async (newSurgery) => {
     .then((resp) => resp.data);
 };
 
+export const sendSurgeryUpdate = async (newSurgery) => {
+  return axios
+    .post(`${BASE_URL}/surgery/update`, newSurgery)
+    .then((resp) => resp.data);
+};
+
 export const fetchFormData = async () => {
   const [providers, patients] = await Promise.all([
     axios.get(`${BASE_URL}/providers`),
